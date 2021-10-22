@@ -169,7 +169,6 @@ class PropostaControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-
     @DisplayName("Deve retornar erro quando cadastrar proposta com salário inválido")
     @ParameterizedTest
     @NullSource
@@ -190,5 +189,33 @@ class PropostaControllerTest {
         mockMvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro com status 422 quando cadastrar proposta com documento repetido")
+    void test8() throws Exception {
+        PropostaRequest propostaRequest = new PropostaRequest("685.104.060-30",
+                "email@email.com",
+                "João",
+                "Rua um",
+                new BigDecimal("2000"));
+
+        propostaRepository.save(propostaRequest.toModel());
+
+        PropostaRequest propostaRequestRepetida = new PropostaRequest("685.104.060-30",
+                "email@email.com",
+                "João",
+                "Rua um",
+                new BigDecimal("2000"));
+
+        String content = objectMapper.writeValueAsString(propostaRequestRepetida);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
+
+        mockMvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
     }
 }
