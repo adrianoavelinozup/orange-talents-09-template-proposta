@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestControllerAdvice
-public class ErroDeValidacaoHandler {
+public class ErroDeValidacaoHandlerAdvice {
 
     @Autowired
     private MessageSource messageSource;

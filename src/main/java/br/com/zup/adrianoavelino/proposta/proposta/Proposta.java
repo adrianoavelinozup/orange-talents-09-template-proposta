@@ -57,6 +57,14 @@ public class Proposta {
         return id;
     }
 
+    public String getDocumento() {
+        return documento;
+    }
+
+    public BigDecimal getSalario() {
+        return salario;
+    }
+
     public boolean ehRepetida(PropostaRepository propostaRepository) {
         return propostaRepository.findByDocumento(this.documento).isPresent();
     }

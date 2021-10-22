@@ -217,5 +217,7 @@ class PropostaControllerTest {
         mockMvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+
+        propostaRepository.deleteAll();
     }
 }
