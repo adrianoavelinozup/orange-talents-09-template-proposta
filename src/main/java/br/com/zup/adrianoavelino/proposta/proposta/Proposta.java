@@ -1,6 +1,7 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.DocumentoValido;
+import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.PropostaRepetidaException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Entity
 @Table(name = "propostas")
@@ -18,7 +20,7 @@ public class Proposta {
 
     @DocumentoValido
     @NotBlank
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String documento;
 
     @NotBlank
@@ -53,5 +55,9 @@ public class Proposta {
 
     public Long getId() {
         return id;
+    }
+
+    public boolean ehRepetida(PropostaRepository propostaRepository) {
+        return propostaRepository.findByDocumento(this.documento).isPresent();
     }
 }

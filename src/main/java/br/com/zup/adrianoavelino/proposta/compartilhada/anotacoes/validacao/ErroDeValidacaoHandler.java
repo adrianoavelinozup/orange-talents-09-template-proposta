@@ -1,5 +1,6 @@
 package br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.validacao;
 
+import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.PropostaRepetidaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -31,6 +32,12 @@ public class ErroDeValidacaoHandler {
         });
 
         return erro;
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(PropostaRepetidaException.class)
+    public ErroDto handlePropostaRepetida(PropostaRepetidaException exception) {
+      return new ErroDto(HttpStatus.UNPROCESSABLE_ENTITY.value(), LocalDateTime.now(), exception.getMessage(), null);
     }
 
 }
