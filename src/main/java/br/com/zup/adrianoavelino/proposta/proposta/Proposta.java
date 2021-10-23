@@ -1,7 +1,6 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.DocumentoValido;
-import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.PropostaRepetidaException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -9,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Entity
 @Table(name = "propostas")
@@ -41,6 +39,9 @@ public class Proposta {
     @Column(nullable = false)
     private BigDecimal salario;
 
+    @Enumerated(EnumType.STRING)
+    private StatusProposta statusProposta;
+
     @Deprecated
     public Proposta() {
     }
@@ -57,6 +58,9 @@ public class Proposta {
         return id;
     }
 
+    public String getNome() {
+        return nome;
+    }
     public String getDocumento() {
         return documento;
     }
@@ -65,7 +69,15 @@ public class Proposta {
         return salario;
     }
 
+    public StatusProposta getStatusProposta() {
+        return statusProposta;
+    }
+
     public boolean ehRepetida(PropostaRepository propostaRepository) {
         return propostaRepository.findByDocumento(this.documento).isPresent();
+    }
+
+    public void adicionaStatus(StatusProposta statusProposta) {
+        this.statusProposta = statusProposta;
     }
 }

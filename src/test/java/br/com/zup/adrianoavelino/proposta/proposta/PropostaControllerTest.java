@@ -1,16 +1,24 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
+import feign.Request;
+import feign.Response;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -20,6 +28,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.net.ConnectException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,6 +45,9 @@ class PropostaControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private AnaliseFinanceiraCliente analiseFinanceiraCliente;
 
     @Autowired
     private PropostaRepository propostaRepository;
@@ -218,6 +234,60 @@ class PropostaControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
 
+        propostaRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("Deve cadastrar proposta com analise financeira ELEGIVEL")
+    void test9() throws Exception {
+        ResultadoAnaliseResponse resultadoAnaliseResponse = new ResultadoAnaliseResponse();
+        ResponseEntity<ResultadoAnaliseResponse> response = ResponseEntity.status(HttpStatus.CREATED).body(resultadoAnaliseResponse);
+        Mockito.when(analiseFinanceiraCliente.solicitar(Mockito.any())).thenReturn(response);
+
+        PropostaRequest propostaRequestRepetida = new PropostaRequest("685.104.060-30",
+                "email@email.com",
+                "João",
+                "Rua um",
+                new BigDecimal("2000"));
+
+        String content = objectMapper.writeValueAsString(propostaRequestRepetida);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
+
+        mockMvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        Optional<Proposta> possivelProposta = propostaRepository.findByDocumento(propostaRequestRepetida.getDocumento());
+        Assertions.assertTrue(possivelProposta.get().getStatusProposta().equals(StatusProposta.ELEGIVEL));
+
+        propostaRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("Deve cadastrar uma nova proposta com analise financeira NAO_ELEGIVEL")
+    void test10() throws Exception {
+        PropostaRequest propostaRequestRepetida = new PropostaRequest("387.831.210-56",
+                "email@email.com",
+                "João",
+                "Rua um",
+                new BigDecimal("2000"));
+        FeignException.UnprocessableEntity feignException = Mockito.mock(FeignException.UnprocessableEntity.class);
+        Mockito.when(analiseFinanceiraCliente.solicitar(Mockito.any()))
+                .thenThrow(feignException);
+
+        String content = objectMapper.writeValueAsString(propostaRequestRepetida);
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
+        mockMvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        Optional<Proposta> possivelProposta = propostaRepository.findByDocumento(propostaRequestRepetida.getDocumento());
+        Assertions.assertTrue(possivelProposta.get().getStatusProposta().equals(StatusProposta.NAO_ELEGIVEL));
         propostaRepository.deleteAll();
     }
 }
