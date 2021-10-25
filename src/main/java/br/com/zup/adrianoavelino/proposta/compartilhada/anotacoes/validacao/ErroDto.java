@@ -1,9 +1,12 @@
 package br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.validacao;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErroDto {
     private Integer status;
     private LocalDateTime data;

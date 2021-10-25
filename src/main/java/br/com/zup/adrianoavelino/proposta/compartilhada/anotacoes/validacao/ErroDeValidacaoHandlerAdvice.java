@@ -1,6 +1,8 @@
 package br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.validacao;
 
 import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.PropostaRepetidaException;
+import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.RegraDeNegocioException;
+import br.com.zup.adrianoavelino.proposta.proposta.EntidadeNaoEncontradaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -38,6 +40,12 @@ public class ErroDeValidacaoHandlerAdvice {
     @ExceptionHandler(PropostaRepetidaException.class)
     public ErroDto handlePropostaRepetida(PropostaRepetidaException exception) {
       return new ErroDto(HttpStatus.UNPROCESSABLE_ENTITY.value(), LocalDateTime.now(), exception.getMessage(), null);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntidadeNaoEncontradaException.class)
+    public ErroDto handleRegraDeNegocioException(EntidadeNaoEncontradaException exception) {
+      return new ErroDto(HttpStatus.NOT_FOUND.value(), LocalDateTime.now(), exception.getMessage(), null);
     }
 
 }

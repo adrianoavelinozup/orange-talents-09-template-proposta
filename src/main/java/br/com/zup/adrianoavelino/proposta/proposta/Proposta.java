@@ -76,6 +76,19 @@ public class Proposta {
         return statusProposta;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public String getNumeroDoCartao() {
+        if (cartao != null) return cartao.getNumeroCartao();
+        return null;
+    }
+
     public boolean ehRepetida(PropostaRepository propostaRepository) {
         return propostaRepository.findByDocumento(this.documento).isPresent();
     }
