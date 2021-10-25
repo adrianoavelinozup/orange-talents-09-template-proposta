@@ -21,6 +21,13 @@ public class CartaoResponse {
     @JsonProperty("idProposta")
     private Long propostaId;
 
+    public CartaoResponse(String titular, String numeroCartao, LocalDateTime emitidoEm, Long propostaId) {
+        this.titular = titular;
+        this.numeroCartao = numeroCartao;
+        this.emitidoEm = emitidoEm;
+        this.propostaId = propostaId;
+    }
+
     public Cartao toModel(PropostaRepository propostaRepository) {
         Proposta proposta = propostaRepository.findById(this.propostaId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Proposta não encontrada"));
