@@ -42,6 +42,9 @@ public class Proposta {
     @Enumerated(EnumType.STRING)
     private StatusProposta statusProposta;
 
+    @OneToOne(cascade = CascadeType.MERGE)
+    private Cartao cartao;
+
     @Deprecated
     public Proposta() {
     }
@@ -79,5 +82,12 @@ public class Proposta {
 
     public void adicionaStatus(StatusProposta statusProposta) {
         this.statusProposta = statusProposta;
+    }
+
+    public void associarCartao(Cartao cartao) {
+        if (!this.statusProposta.equals(StatusProposta.ELEGIVEL)) {
+            throw new PropostaNaoElegivelException("Não é possível adicionar cartão para uma proposta não elegível");
+        }
+        this.cartao = cartao;
     }
 }
