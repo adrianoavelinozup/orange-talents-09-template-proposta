@@ -1,5 +1,6 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
+import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.EntidadeNaoEncontradaException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpStatus;
 

@@ -1,6 +1,7 @@
-package br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.validacao;
+package br.com.zup.adrianoavelino.proposta.compartilhada.excecoes;
 
-import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.RegraDeNegocioException;
+import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.dto.CampoComErro;
+import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.dto.ErroDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

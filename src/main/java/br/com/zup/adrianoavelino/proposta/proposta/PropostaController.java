@@ -1,6 +1,6 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
-import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.PropostaRepetidaException;
+import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.PropostaRepetidaException;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

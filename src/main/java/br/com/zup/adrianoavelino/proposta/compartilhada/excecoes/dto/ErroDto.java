@@ -1,4 +1,4 @@
-package br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.validacao;
+package br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

@@ -1,6 +1,6 @@
-package br.com.zup.adrianoavelino.proposta.proposta;
+package br.com.zup.adrianoavelino.proposta.compartilhada.excecoes;
 
-import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.RegraDeNegocioException;
+import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.RegraDeNegocioException;
 import org.springframework.http.HttpStatus;
 
 public class EntidadeNaoEncontradaException extends RegraDeNegocioException {

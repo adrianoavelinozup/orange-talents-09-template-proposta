@@ -1,7 +1,7 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.DocumentoValido;
-import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.PropostaNaoElegivelException;
+import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.PropostaNaoElegivelException;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;

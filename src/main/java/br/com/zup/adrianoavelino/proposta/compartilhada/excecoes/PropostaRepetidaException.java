@@ -1,4 +1,4 @@
-package br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes;
+package br.com.zup.adrianoavelino.proposta.compartilhada.excecoes;
 
 import org.springframework.http.HttpStatus;
 
