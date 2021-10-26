@@ -5,6 +5,7 @@ import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +32,8 @@ public class PropostaController {
         Proposta proposta = request.toModel();
         if(proposta.ehRepetida(propostaRepository)) {
             logger.warn("Proposta com o documento {} já está cadastrada!", proposta.getDocumento());
-            throw  new PropostaRepetidaException("Proposta repetida. Não pode haver mais de uma proposta por documento");
+            throw  new PropostaRepetidaException("Proposta repetida. Não pode haver mais de uma proposta por documento",
+                    HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         propostaRepository.save(proposta);

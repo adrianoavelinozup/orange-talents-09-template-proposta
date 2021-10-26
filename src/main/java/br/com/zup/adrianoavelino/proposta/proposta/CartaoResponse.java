@@ -1,6 +1,7 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.http.HttpStatus;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -30,7 +31,7 @@ public class CartaoResponse {
 
     public Cartao toModel(PropostaRepository propostaRepository) {
         Proposta proposta = propostaRepository.findById(this.propostaId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Proposta não encontrada"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Proposta não encontrada", HttpStatus.NOT_FOUND));
         return new Cartao(this.titular, this.numeroCartao, emitidoEm, proposta);
     }
 

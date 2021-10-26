@@ -1,6 +1,7 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,7 @@ public class AcompanharPropostaController {
     @GetMapping("/{propostaId}")
     public ResponseEntity<?> pesquisar(@PathVariable Long propostaId) {
         Proposta proposta = propostaRepository.findById(propostaId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Proposta não encontrada"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Proposta não encontrada", HttpStatus.NOT_FOUND));
         return ResponseEntity.ok(proposta);
     }
 

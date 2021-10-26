@@ -1,12 +1,11 @@
 package br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.validacao;
 
-import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.PropostaRepetidaException;
 import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.RegraDeNegocioException;
-import br.com.zup.adrianoavelino.proposta.proposta.EntidadeNaoEncontradaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,16 +35,10 @@ public class ErroDeValidacaoHandlerAdvice {
         return erro;
     }
 
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(PropostaRepetidaException.class)
-    public ErroDto handlePropostaRepetida(PropostaRepetidaException exception) {
-      return new ErroDto(HttpStatus.UNPROCESSABLE_ENTITY.value(), LocalDateTime.now(), exception.getMessage(), null);
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ErroDto handleRegraDeNegocioException(EntidadeNaoEncontradaException exception) {
-      return new ErroDto(HttpStatus.NOT_FOUND.value(), LocalDateTime.now(), exception.getMessage(), null);
+    @ExceptionHandler(RegraDeNegocioException.class)
+    public ResponseEntity<ErroDto> handlePropostaRepetida(RegraDeNegocioException exception) {
+        ErroDto erroDto = new ErroDto(exception.getHttpStatus().value(), LocalDateTime.now(), exception.getMessage(), null);
+        return ResponseEntity.status(exception.getHttpStatus()).body(erroDto);
     }
 
 }

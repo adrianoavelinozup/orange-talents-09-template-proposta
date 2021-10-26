@@ -1,6 +1,8 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.DocumentoValido;
+import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.excecoes.PropostaNaoElegivelException;
+import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -99,7 +101,7 @@ public class Proposta {
 
     public void associarCartao(Cartao cartao) {
         if (!this.statusProposta.equals(StatusProposta.ELEGIVEL)) {
-            throw new PropostaNaoElegivelException("Não é possível adicionar cartão para uma proposta não elegível");
+            throw new PropostaNaoElegivelException("Não é possível adicionar cartão para uma proposta não elegível", HttpStatus.BAD_REQUEST);
         }
         this.cartao = cartao;
     }
