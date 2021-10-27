@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,9 @@ class AssociaCartaoNaPropostaTaskTest {
 
     @MockBean
     private CartaoCliente cartaoCliente;
+
+    @Value("${proposta.sistema-externo.cartoes.quantidade-itens-por-consulta}")
+    private Long quantidadeItensPorConsulta;
 
     @Test
     @DisplayName("Deve associar cartão na proposta")
@@ -56,7 +60,7 @@ class AssociaCartaoNaPropostaTaskTest {
 
         associaCartaoNaPropostaTask.associarCartao();
 
-        List<Proposta> propostasElegiveisSemCartao = propostaRepository.findByPropostaElegivelSemCartao();
+        List<Proposta> propostasElegiveisSemCartao = propostaRepository.findByPropostaElegivelSemCartao(quantidadeItensPorConsulta);
         Assertions.assertTrue(propostasElegiveisSemCartao.isEmpty());
     }
 }

@@ -5,6 +5,7 @@ import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,9 +25,12 @@ public class AssociaCartaoNaPropostaTask {
     @Autowired
     private CartaoCliente cartaoCliente;
 
+    @Value("${proposta.sistema-externo.cartoes.quantidade-itens-por-consulta}")
+    private Long quantidadeItensPorConsulta;
+
     @Scheduled(fixedDelayString = "${proposta.sistema-externo.cartoes.intervalo-tempo-execucao-tarefa}")
     public void associarCartao() {
-        List<Proposta> propostasElegiveis = propostaRepository.findByPropostaElegivelSemCartao();
+        List<Proposta> propostasElegiveis = propostaRepository.findByPropostaElegivelSemCartao(quantidadeItensPorConsulta);
         if (propostasElegiveis.isEmpty()) return;
 
         logger.info("Realiza consulta de cartão para propostas elegíveis {}", LocalDateTime.now());

@@ -92,7 +92,7 @@ public class Proposta {
     }
 
     public boolean ehRepetida(PropostaRepository propostaRepository) {
-        return propostaRepository.findByDocumento(this.documento).isPresent();
+        return propostaRepository.existsByDocumento(this.documento);
     }
 
     public void adicionaStatus(StatusProposta statusProposta) {

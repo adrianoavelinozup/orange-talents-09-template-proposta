@@ -6,7 +6,7 @@ Projeto desenvolvido durante o treinamento Orange Talents 9
 ```bash
 # cria uma cópia das variáveis de ambiente
 # Obs: o docker-compose precisa do arquivo .env com os valores das variáveis de ambiente
-cp .env-example .env2
+cp .env-example .env
 
 # inicia a infra para aplicação
 docker-compose -f docker-compose-infra.yaml up -d
