@@ -25,6 +25,7 @@ public class Cartao {
     private LocalDateTime emitidoEm;
 
     @OneToOne
+    @NotNull
     private Proposta proposta;
 
     @Deprecated
@@ -40,5 +41,9 @@ public class Cartao {
 
     public String getNumeroCartao() {
         return numeroCartao;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
