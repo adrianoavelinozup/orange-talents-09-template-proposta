@@ -1,6 +1,7 @@
 package br.com.zup.adrianoavelino.proposta.biometria;
 
 import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.EntidadeNaoEncontradaException;
+import br.com.zup.adrianoavelino.proposta.compartilhada.seguranca.Ofuscador;
 import br.com.zup.adrianoavelino.proposta.proposta.Cartao;
 import br.com.zup.adrianoavelino.proposta.proposta.CartaoRepository;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class BiometriaController {
     private final Logger logger = LoggerFactory.getLogger(BiometriaController.class);
 
     @PostMapping("/{cartaoId}/biometrias")
-    public ResponseEntity<?> cadastrar(@PathVariable("cartaoId") Long cartaoId,
+    public ResponseEntity<Object> cadastrar(@PathVariable("cartaoId") Long cartaoId,
                                        @Valid @RequestBody BiometriaRequest request,
                                        UriComponentsBuilder uriComponentsBuilder) {
         Cartao cartao = cartaoRepository.findById(cartaoId)
@@ -36,7 +37,7 @@ public class BiometriaController {
                 });
         Biometria biometria = request.toModel(cartao);
         biometriaRepository.save(biometria);
-        logger.info("Biometria id={} do cartão id={} adicionada com sucesso!", biometria.getId(), cartaoId);
+        logger.info("Biometria id={} cartão {} adicionada com sucesso!", biometria.getId(), Ofuscador.numeroCartao(cartao.getNumeroCartao()));
         URI uri = uriComponentsBuilder.path("/v1/cartoes/{idCartao}/biometrias/{id}")
                 .buildAndExpand(cartaoId, biometria.getId()).toUri();
         return ResponseEntity.created(uri).build();

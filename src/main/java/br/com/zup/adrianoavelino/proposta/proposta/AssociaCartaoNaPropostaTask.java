@@ -1,6 +1,7 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 
+import br.com.zup.adrianoavelino.proposta.compartilhada.seguranca.Ofuscador;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class AssociaCartaoNaPropostaTask {
                 propostaElegiveisComCartaoAprovado.add(proposta);
                 Cartao cartao = response.getBody().toModel(propostaRepository);
                 proposta.associarCartao(cartao);
-                logger.info("Proposta id={} associada ao cartão {}", proposta.getId(), cartao.getNumeroCartao());
+                logger.info("Proposta id={} associada ao cartão {}", proposta.getId(), Ofuscador.numeroCartao(cartao.getNumeroCartao()));
             } catch (FeignException.FeignServerException ex) {
                 logger.warn("Proposta id={} não possui cartão disponível", ex.getMessage());
             } catch (FeignException ex) {

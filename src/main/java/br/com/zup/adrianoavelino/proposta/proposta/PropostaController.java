@@ -1,6 +1,7 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
 import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.PropostaRepetidaException;
+import br.com.zup.adrianoavelino.proposta.compartilhada.seguranca.Ofuscador;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +29,10 @@ public class PropostaController {
     private final Logger logger = LoggerFactory.getLogger(PropostaController.class);
 
     @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestBody @Valid PropostaRequest request, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<Object> cadastrar(@RequestBody @Valid PropostaRequest request, UriComponentsBuilder uriBuilder) {
         Proposta proposta = request.toModel();
         if(proposta.ehRepetida(propostaRepository)) {
-            logger.warn("Proposta com o documento {} já está cadastrada!", proposta.getDocumento());
+            logger.warn("Proposta com o documento {} já está cadastrada!", Ofuscador.documento(proposta.getDocumento()));
             throw  new PropostaRepetidaException("Proposta repetida. Não pode haver mais de uma proposta por documento",
                     HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -41,7 +42,7 @@ public class PropostaController {
         propostaRepository.save(proposta);
 
         URI uri = uriBuilder.path("/v1/propostas/{id}").buildAndExpand(proposta.getId()).toUri();
-        logger.info("Proposta documento={}, salário={}, status={} criada com sucesso!", proposta.getDocumento(), proposta.getSalario(), proposta.getStatusProposta());
+        logger.info("Proposta documento={}, salário={}, status={} criada com sucesso!", Ofuscador.documento(proposta.getDocumento()), proposta.getSalario(), proposta.getStatusProposta());
         return ResponseEntity.created(uri).build();
     }
 
@@ -50,12 +51,12 @@ public class PropostaController {
             SolicitacaoAnaliseRequest solicitacaoAnaliseRequest = new SolicitacaoAnaliseRequest(proposta);
             analiseFinanceiraCliente.solicitar(solicitacaoAnaliseRequest);
             proposta.adicionaStatus(StatusProposta.ELEGIVEL);
-            logger.info("Proposta documento={} atualiza status para {}", proposta.getDocumento(), proposta.getStatusProposta());
+            logger.info("Proposta documento={} atualiza status para {}", Ofuscador.documento(proposta.getDocumento()), proposta.getStatusProposta());
         } catch (FeignException.UnprocessableEntity feignException) {
             proposta.adicionaStatus(StatusProposta.NAO_ELEGIVEL);
-            logger.info("Proposta documento={} atualiza status para {}", proposta.getDocumento(), proposta.getStatusProposta());
+            logger.info("Proposta documento={} atualiza status para {}", Ofuscador.documento(proposta.getDocumento()), proposta.getStatusProposta());
         } catch (FeignException e) {
-            logger.error("Proposta  documento={}, não foi possível acessar o serviço de analise financeira. Erro: {}", proposta.getDocumento(), e.getLocalizedMessage());
+            logger.error("Proposta  documento={}, não foi possível acessar o serviço de analise financeira. Erro: {}", Ofuscador.documento(proposta.getDocumento()), e.getLocalizedMessage());
         }
     }
 }
