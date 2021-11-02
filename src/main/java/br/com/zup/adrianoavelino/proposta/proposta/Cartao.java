@@ -28,6 +28,11 @@ public class Cartao {
     @NotNull
     private Proposta proposta;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusCartao status;
+
     @Deprecated
     public Cartao() {
     }
@@ -37,6 +42,7 @@ public class Cartao {
         this.numeroCartao = numeroCartao;
         this.emitidoEm = emitidoEm;
         this.proposta = proposta;
+        this.status = StatusCartao.DESBLOQUEADO;
     }
 
     public String getNumeroCartao() {
@@ -45,5 +51,9 @@ public class Cartao {
 
     public Long getId() {
         return id;
+    }
+
+    public void bloquear() {
+        this.status = StatusCartao.BLOQUEADO;
     }
 }

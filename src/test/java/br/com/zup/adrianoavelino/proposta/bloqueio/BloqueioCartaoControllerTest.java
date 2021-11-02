@@ -1,16 +1,18 @@
 package br.com.zup.adrianoavelino.proposta.bloqueio;
 
-import br.com.zup.adrianoavelino.proposta.proposta.Cartao;
-import br.com.zup.adrianoavelino.proposta.proposta.CartaoRepository;
-import br.com.zup.adrianoavelino.proposta.proposta.Proposta;
-import br.com.zup.adrianoavelino.proposta.proposta.PropostaRepository;
+import br.com.zup.adrianoavelino.proposta.proposta.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -46,6 +48,9 @@ class BloqueioCartaoControllerTest {
 
     private Cartao cartao;
 
+    @MockBean
+    private CartaoCliente cartaoCliente;
+
     @BeforeEach
     void carregarDEadodosIniciais() {
         Proposta proposta = new Proposta("563.734.420-55",
@@ -62,6 +67,11 @@ class BloqueioCartaoControllerTest {
     @Test
     @DisplayName("Deve bloquear um cartão com sucesso")
     void test1() throws Exception {
+        ResultadoBloqueioResponse resultadoBloqueioResponse = new ResultadoBloqueioResponse(StatusCartaoResponse.BLOQUEADO);
+        ResponseEntity<ResultadoBloqueioResponse> response = ResponseEntity.status(HttpStatus.CREATED).body(resultadoBloqueioResponse);
+        SolicitacaoBloqueioRequest solicitacaoBloqueioRequest = new SolicitacaoBloqueioRequest("Sistema de Propostas");
+        Mockito.when(cartaoCliente.bloquearCartao(cartao.getNumeroCartao(),solicitacaoBloqueioRequest)).thenReturn(response);
+
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI, cartao.getNumeroCartao())
                 .header("User-Agent", "PostmanRuntime/7.28.4");
 

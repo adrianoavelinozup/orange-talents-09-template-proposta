@@ -4,12 +4,15 @@ import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.EntidadeNaoEnco
 import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.RegraDeNegocioException;
 import br.com.zup.adrianoavelino.proposta.compartilhada.seguranca.Ofuscador;
 import br.com.zup.adrianoavelino.proposta.proposta.Cartao;
+import br.com.zup.adrianoavelino.proposta.proposta.CartaoCliente;
 import br.com.zup.adrianoavelino.proposta.proposta.CartaoRepository;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +29,11 @@ public class BloqueioCartaoController {
     @Autowired
     private BloqueioCartaoRepository bloqueioCartaoRepository;
 
+    @Autowired
+    private CartaoCliente cartaoCliente;
+
     @PostMapping("/{numeroCartao}/bloqueios")
+    @Transactional
     public ResponseEntity<Object> cadastrar(@PathVariable String numeroCartao,
                                        @NotBlank @RequestHeader("User-Agent") String userAgent,
                                        HttpServletRequest request) {
@@ -44,8 +51,25 @@ public class BloqueioCartaoController {
 
         BloqueioCartao bloqueioCartao = new BloqueioCartao(userAgent, request.getRemoteAddr(), cartao);
 
-        bloqueioCartaoRepository.save(bloqueioCartao);
-        logger.info("Cartão {} bloqueado com sucesso!", Ofuscador.numeroCartao(numeroCartao));
+        bloquearCartao(cartao, bloqueioCartao);
         return ResponseEntity.ok().build();
+    }
+
+    private void bloquearCartao(Cartao cartao, BloqueioCartao bloqueioCartao) {
+        try {
+            cartaoCliente.bloquearCartao(cartao.getNumeroCartao(), new SolicitacaoBloqueioRequest("Sistema de Propostas"));
+            cartao.bloquear();
+            cartaoRepository.save(cartao);
+            bloqueioCartaoRepository.save(bloqueioCartao);
+            logger.info("Cartão {} bloqueado com sucesso!", Ofuscador.numeroCartao(cartao.getNumeroCartao()));
+        } catch (FeignException.UnprocessableEntity exception) {
+            logger.warn("Cartão {}, não foi possível bloquear cartão no sistema Externo. Erro: {}",
+                    Ofuscador.numeroCartao(cartao.getNumeroCartao()), exception.getMessage());
+            throw new RegraDeNegocioException("Cartão já está bloqueado no sistema externo", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        catch (FeignException exception) {
+            logger.error("Cartão {}, não foi possível bloquear cartão no sistema Externo. Erro: não esperado",
+                    Ofuscador.numeroCartao(cartao.getNumeroCartao()));
+        }
     }
 }
