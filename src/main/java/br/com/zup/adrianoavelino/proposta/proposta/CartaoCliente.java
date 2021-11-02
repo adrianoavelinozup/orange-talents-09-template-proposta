@@ -14,7 +14,7 @@ public interface CartaoCliente {
     @RequestMapping(method = RequestMethod.GET)
     ResponseEntity<CartaoResponse> consultarCartao(@RequestParam Long idProposta);
 
-    @PostMapping("/{numeroCartao}/bloqueios")
+    @PostMapping("${proposta.sistema-externo.cartoes.url.bloqueio}")
     ResponseEntity<ResultadoBloqueioResponse> bloquearCartao(@PathVariable @NotBlank String numeroCartao,
                                                              @RequestBody @Valid SolicitacaoBloqueioRequest solicitacaoBloqueio);
 }
