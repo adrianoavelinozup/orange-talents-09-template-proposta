@@ -1,5 +1,7 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
+import br.com.zup.adrianoavelino.proposta.avisoviagem.ResultadoAvisoViagemResponse;
+import br.com.zup.adrianoavelino.proposta.avisoviagem.SolicitacaoAvisoViagemRequest;
 import br.com.zup.adrianoavelino.proposta.bloqueio.ResultadoBloqueioResponse;
 import br.com.zup.adrianoavelino.proposta.bloqueio.SolicitacaoBloqueioRequest;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -17,4 +19,8 @@ public interface CartaoCliente {
     @PostMapping("${proposta.sistema-externo.cartoes.url.bloqueio}")
     ResponseEntity<ResultadoBloqueioResponse> bloquearCartao(@PathVariable @NotBlank String numeroCartao,
                                                              @RequestBody @Valid SolicitacaoBloqueioRequest solicitacaoBloqueio);
+
+    @PostMapping("${proposta.sistema-externo.cartoes.url.aviso}")
+    ResponseEntity<ResultadoAvisoViagemResponse> avisarViagem(@PathVariable @NotBlank String numeroCartao,
+                                                              @RequestBody @Valid SolicitacaoAvisoViagemRequest solicitacaoAvisoViagemRequest);
 }

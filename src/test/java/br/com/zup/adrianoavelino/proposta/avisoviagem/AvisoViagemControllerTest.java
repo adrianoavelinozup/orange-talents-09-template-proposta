@@ -1,9 +1,6 @@
 package br.com.zup.adrianoavelino.proposta.avisoviagem;
 
-import br.com.zup.adrianoavelino.proposta.proposta.Cartao;
-import br.com.zup.adrianoavelino.proposta.proposta.CartaoRepository;
-import br.com.zup.adrianoavelino.proposta.proposta.Proposta;
-import br.com.zup.adrianoavelino.proposta.proposta.PropostaRepository;
+import br.com.zup.adrianoavelino.proposta.proposta.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,10 +10,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -34,7 +35,7 @@ import java.time.LocalDateTime;
 @ActiveProfiles("test")
 @Transactional
 class AvisoViagemControllerTest {
-    private static final String URI = "/v1/cartoes/{numeroCartao}/avisoViagens";
+    private static final String URI = "/v1/cartoes/{numeroCartao}/avisosViagens";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,6 +51,9 @@ class AvisoViagemControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private CartaoCliente cartaoCliente;
 
     private Cartao cartao;
 
@@ -139,7 +143,15 @@ class AvisoViagemControllerTest {
     void testCadastrarAvisoViagem() throws Exception {
         Assertions.assertEquals(0, avisoViagemRepository.count());
 
-        AvisoViagemRequest avisoViagemRequest = new AvisoViagemRequest("Registro", LocalDate.now());
+        LocalDate dataTermino = LocalDate.now();
+        String cidadeDestino = "Registro";
+
+        ResponseEntity<ResultadoAvisoViagemResponse> resultadoAvisoViagemResponseResponse = ResponseEntity.ok(new ResultadoAvisoViagemResponse(StatusAvisoViagemResponse.CRIADO));
+        SolicitacaoAvisoViagemRequest solicitacaoAvisoViagemRequest = new SolicitacaoAvisoViagemRequest(cidadeDestino, dataTermino);
+        Mockito.when(cartaoCliente.avisarViagem(cartao.getNumeroCartao(), solicitacaoAvisoViagemRequest))
+                .thenReturn(resultadoAvisoViagemResponseResponse);
+
+        AvisoViagemRequest avisoViagemRequest = new AvisoViagemRequest(cidadeDestino, dataTermino);
         String content = objectMapper.writeValueAsString(avisoViagemRequest);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI, cartao.getNumeroCartao())

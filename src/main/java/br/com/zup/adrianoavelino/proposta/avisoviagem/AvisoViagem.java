@@ -53,4 +53,12 @@ public class AvisoViagem {
         this.cartao = cartao;
         this.dataCriacao = LocalDateTime.now();
     }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public LocalDate getDataTermino() {
+        return dataTermino;
+    }
 }

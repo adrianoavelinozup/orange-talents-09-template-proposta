@@ -14,8 +14,6 @@ public class AvisoViagemRequest {
     @JsonProperty
     private String destino;
 
-
-
     @NotNull
     @FutureOrPresent
     @JsonProperty
@@ -28,5 +26,13 @@ public class AvisoViagemRequest {
 
     public AvisoViagem toModel(String userAgent, String ip, Cartao cartao) {
         return new AvisoViagem(this.destino, userAgent, ip, this.dataTermino, cartao);
+    }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public LocalDate getDataTermino() {
+        return dataTermino;
     }
 }
