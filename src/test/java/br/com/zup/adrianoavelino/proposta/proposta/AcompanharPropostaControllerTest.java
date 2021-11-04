@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class AcompanharPropostaControllerTest {
 

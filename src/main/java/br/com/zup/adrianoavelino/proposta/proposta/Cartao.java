@@ -1,9 +1,15 @@
 package br.com.zup.adrianoavelino.proposta.proposta;
 
+import br.com.zup.adrianoavelino.proposta.carteiradigital.CarteiraDigitalDoCartao;
+import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.RegraDeNegocioException;
+import org.springframework.http.HttpStatus;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "cartoes")
