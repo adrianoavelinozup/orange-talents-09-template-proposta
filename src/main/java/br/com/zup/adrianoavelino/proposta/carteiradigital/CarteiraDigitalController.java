@@ -19,8 +19,8 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/v1/cartoes")
-public class CarteiraDigitalPaypalController {
-    private final Logger logger = LoggerFactory.getLogger(CarteiraDigitalPaypalController.class);
+public class CarteiraDigitalController {
+    private final Logger logger = LoggerFactory.getLogger(CarteiraDigitalController.class);
 
     @Autowired
     private CartaoRepository cartaoRepository;
@@ -45,26 +45,25 @@ public class CarteiraDigitalPaypalController {
 
         if (carteiraDigitalDoCartao.jaEstaCadastrada(carteiraDigitalDoCartaoRepository)) {
             throw new RegraDeNegocioException("Carteira digital " + carteiraDigitalDoCartao.getTipoCarteiraDigital()
-                    + " já está cadastrada", HttpStatus.BAD_REQUEST);
+                    + " já está cadastrada", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        ApiCartaoCarteiraDigitalRequest apiCartaoCarteiraDigitalRequest =
-                new ApiCartaoCarteiraDigitalRequest(carteiraDigitalDoCartao);
-
-        associarCarteiraDigital(numeroCartao,carteiraDigitalDoCartao,apiCartaoCarteiraDigitalRequest);
+        associarCarteiraDigital(numeroCartao,carteiraDigitalDoCartao);
         URI uri = uriBuilder.path("/v1/cartoes/{numeroCartao}/carteirasDigitais/{id}")
                 .buildAndExpand(cartao.getNumeroCartao(), carteiraDigitalDoCartao.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
-    private void associarCarteiraDigital(String numeroCartao, CarteiraDigitalDoCartao carteiraDigital,ApiCartaoCarteiraDigitalRequest apiCartaoCarteiraDigitalRequest) {
+    private void associarCarteiraDigital(String numeroCartao, CarteiraDigitalDoCartao carteiraDigital) {
         try {
-            ResponseEntity<ApiCartaoCarteiraDigitalResponse> responseEntity = cartaoCliente.associarCarteiraDigital(numeroCartao, apiCartaoCarteiraDigitalRequest);
+            ApiCartaoCarteiraDigitalRequest apiCartaoCarteiraDigitalRequest = new ApiCartaoCarteiraDigitalRequest(carteiraDigital);
+            cartaoCliente.associarCarteiraDigital(numeroCartao, apiCartaoCarteiraDigitalRequest);
             carteiraDigitalDoCartaoRepository.save(carteiraDigital);
-            logger.info("Carteira Digital cartão {} associada com sucesso!", Ofuscador.numeroCartao(numeroCartao));
+            String numeroCartaoOfuscado = Ofuscador.numeroCartao(numeroCartao);
+            logger.info("Carteira Digital cartão {} associada com sucesso!", numeroCartaoOfuscado);
         } catch (FeignException e) {
-            logger.error("Não foi possível adicionar a carteira digital para o cartão {} .Erro não esperado",
-                    Ofuscador.numeroCartao(numeroCartao));
+            logger.error("Não foi possível adicionar a carteira digital para o cartão {} .Erro não esperado: {}",
+                    Ofuscador.numeroCartao(numeroCartao), Ofuscador.mensagemLogComNumeroCartao(e.getMessage()));
             throw new RegraDeNegocioException("Não foi possível sincronizar a carteira digital no sistema externo", HttpStatus.BAD_REQUEST);
         }
     }

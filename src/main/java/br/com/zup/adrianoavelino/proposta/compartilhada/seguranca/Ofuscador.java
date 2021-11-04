@@ -50,4 +50,14 @@ public class Ofuscador {
     public static String numeroCartao(@NotBlank @Length(min = 5) String numeroCartao) {
         return ofuscar(numeroCartao, 0, numeroCartao.length() -5);
     }
+
+    /**
+     * Ofusca o número do cartão, no log do sistema, quando não é possível
+     * acessar um sistema externo
+     * @param mensagem texto de logg com informação do número do cartão na url
+     * @return mensagem do log com o número do cartão ofuscado
+     */
+    public static String mensagemLogComNumeroCartao(@NotBlank String mensagem) {
+        return mensagem.replaceAll("([0-9]+-)", "****");
+    }
 }

@@ -56,4 +56,13 @@ class OfuscadorTest {
         Assertions.assertEquals(esperado, cartaoOfucado);
     }
 
+    @Test
+    @DisplayName("Deve ofuscar mensagem do log com número do cartão")
+    void test7(){
+        String mensagemDoLog =  "Conexão recusada (Connection refused) executing POST http://localhost:8888/api/cartoes/7422-3785-6033-1435/carteiras";
+        String cartaoOfucado = Ofuscador.mensagemLogComNumeroCartao(mensagemDoLog);
+        String esperado = "Conexão recusada (Connection refused) executing POST http://localhost:8888/api/cartoes/************1435/carteiras";
+        Assertions.assertEquals(esperado, cartaoOfucado);
+    }
+
 }

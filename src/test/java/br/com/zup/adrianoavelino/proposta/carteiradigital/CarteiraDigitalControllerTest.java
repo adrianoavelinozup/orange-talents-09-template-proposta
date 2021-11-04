@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mockito;
@@ -16,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -32,7 +33,7 @@ import java.time.LocalDateTime;
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @Transactional
-class CarteiraDigitalPaypalControllerTest {
+class CarteiraDigitalControllerTest {
     private static final String URI = "/v1/cartoes/{numeroCartao}/carteirasDigitais";
 
     @Autowired
@@ -68,10 +69,11 @@ class CarteiraDigitalPaypalControllerTest {
         cartaoRepository.save(cartao);
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(TipoCarteiraDigital.class)
     @DisplayName("Deve cadastrar carteira digital com status CREATED")
-    void deveCadastrarCarteiraComStatusCreated() throws Exception {
-        CarteiraDigitalDoCartaoRequest carteiraDigital = new CarteiraDigitalDoCartaoRequest("email@email.com", TipoCarteiraDigital.PAYPAL);
+    void deveCadastrarCarteiraComStatusCreated(TipoCarteiraDigital tipoCarteiraDigital) throws Exception {
+        CarteiraDigitalDoCartaoRequest carteiraDigital = new CarteiraDigitalDoCartaoRequest("email@email.com", tipoCarteiraDigital);
         String content = objectMapper.writeValueAsString(carteiraDigital);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI, cartao.getNumeroCartao())
@@ -83,10 +85,11 @@ class CarteiraDigitalPaypalControllerTest {
                     .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(TipoCarteiraDigital.class)
     @DisplayName("Deve cadastrar carteira digital com Location")
-    void deveCadastrarCarteiraComLocation() throws Exception {
-        CarteiraDigitalDoCartaoRequest carteiraDigital = new CarteiraDigitalDoCartaoRequest("email@email.com", TipoCarteiraDigital.PAYPAL);
+    void deveCadastrarCarteiraComLocation(TipoCarteiraDigital tipoCarteiraDigital) throws Exception {
+        CarteiraDigitalDoCartaoRequest carteiraDigital = new CarteiraDigitalDoCartaoRequest("email@email.com", tipoCarteiraDigital);
         String content = objectMapper.writeValueAsString(carteiraDigital);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI, cartao.getNumeroCartao())
@@ -101,25 +104,10 @@ class CarteiraDigitalPaypalControllerTest {
 
     @ParameterizedTest
     @NullAndEmptySource
+    @CsvSource(value = {"email.email.com", "email@", "@email"})
     @DisplayName("Deve mostrar status BAD_REQUEST quando cadastrar carteira digital Email inválido")
     void deveMostrarStatusBadRequestQuandoCadastrarCarteiraComEmailInvalido(String email) throws Exception {
-        CarteiraDigitalDoCartaoRequest carteiraDigital = new CarteiraDigitalDoCartaoRequest(email, TipoCarteiraDigital.PAYPAL);
-        String content = objectMapper.writeValueAsString(carteiraDigital);
-
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI, cartao.getNumeroCartao())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(request)
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @DisplayName("Deve mostrar status BAD_REQUEST quando cadastrar carteira digital Email inválido")
-    void deveMostrarStatusBadRequestQuandoCadastrarCarteiraComTipoCarteiraDigitalInvalido(TipoCarteiraDigital tipoCarteiraDigital) throws Exception {
-        CarteiraDigitalDoCartaoRequest carteiraDigital = new CarteiraDigitalDoCartaoRequest("email@email.com", tipoCarteiraDigital);
+        CarteiraDigitalDoCartaoRequest carteiraDigital = new CarteiraDigitalDoCartaoRequest(email, TipoCarteiraDigital.SAMSUNG);
         String content = objectMapper.writeValueAsString(carteiraDigital);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(URI, cartao.getNumeroCartao())
@@ -169,7 +157,7 @@ class CarteiraDigitalPaypalControllerTest {
 
         mockMvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
 
         Assertions.assertEquals(1, carteiraDigitalDoCartaoRepository.count());
     }
