@@ -2,6 +2,7 @@ package br.com.zup.adrianoavelino.proposta.proposta;
 
 import br.com.zup.adrianoavelino.proposta.compartilhada.anotacoes.DocumentoValido;
 import br.com.zup.adrianoavelino.proposta.compartilhada.excecoes.PropostaNaoElegivelException;
+import br.com.zup.adrianoavelino.proposta.compartilhada.seguranca.CryptadorConverter;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ public class Proposta {
     @DocumentoValido
     @NotBlank
     @Column(unique = true, nullable = false)
+    @Convert(converter = CryptadorConverter.class)
     private String documento;
 
     @NotBlank
