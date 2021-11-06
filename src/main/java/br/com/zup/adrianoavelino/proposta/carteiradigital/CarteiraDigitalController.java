@@ -62,8 +62,7 @@ public class CarteiraDigitalController {
             String numeroCartaoOfuscado = Ofuscador.numeroCartao(numeroCartao);
             logger.info("Carteira Digital cartão {} associada com sucesso!", numeroCartaoOfuscado);
         } catch (FeignException e) {
-            logger.error("Não foi possível adicionar a carteira digital para o cartão {} .Erro não esperado: {}",
-                    Ofuscador.numeroCartao(numeroCartao), Ofuscador.mensagemLogComNumeroCartao(e.getMessage()));
+            logger.error("Não foi possível adicionar a carteira digital para o cartão {} .Erro não esperado", numeroCartao);
             throw new RegraDeNegocioException("Não foi possível sincronizar a carteira digital no sistema externo", HttpStatus.BAD_REQUEST);
         }
     }
