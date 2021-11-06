@@ -6,17 +6,17 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 @Converter
-public class CryptadorConverter implements AttributeConverter<String, String> {
+public class CriptadorConverter implements AttributeConverter<String, String> {
     @Autowired
-    private Cryptador cripdatador;
+    private Criptador cripdatador;
 
     @Override
     public String convertToDatabaseColumn(String documento) {
-       return cripdatador.encrypt(documento);
+       return cripdatador.encriptar(documento);
     }
 
     @Override
     public String convertToEntityAttribute(String documentoCriptado) {
-        return cripdatador.decrypt(documentoCriptado);
+        return cripdatador.decriptar(documentoCriptado);
     }
 }
