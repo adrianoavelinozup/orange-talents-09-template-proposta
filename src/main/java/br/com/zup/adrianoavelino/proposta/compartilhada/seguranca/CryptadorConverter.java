@@ -8,7 +8,7 @@ import javax.persistence.Converter;
 @Converter
 public class CryptadorConverter implements AttributeConverter<String, String> {
     @Autowired
-    private Cryptador cripdatador;
+    private Criptador cripdatador;
 
     @Override
     public String convertToDatabaseColumn(String documento) {
